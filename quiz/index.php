@@ -57,7 +57,7 @@ article {
 </nav>
 
 <article>
-  <h3 style="color:Tomato;">HELLO TEAM! THIS IS TO TEST JENKINS PIPELINE</h3>
+  <h3 style="color:Tomato;">HELLO TEAM! THIS IS TO TEST JENKINS BLUE OCEAN PIPELINE</h3>
 
 </article>
 
