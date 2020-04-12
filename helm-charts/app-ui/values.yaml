@@ -2,5 +2,5 @@ replicaCount: 3
 
 image:
   repository: aa047267/spinnaker
-  tag: web-deployment-1.10.0-staging
+  tag: web-deployment
   pullPolicy: Always
