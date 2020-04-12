@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: spinnaker-service
+  namespace: nginx-for-spinnaker
+spec:
+  selector:
+    app: spinnaker
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: NodePort

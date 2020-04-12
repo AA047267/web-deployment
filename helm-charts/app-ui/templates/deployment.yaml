@@ -1,0 +1,23 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: spinnaker-stage
+  namespace: nginx-for-spinnaker
+  annotations:
+    moniker.spinnaker.io/stack: staging
+spec:
+  selector:
+    matchLabels:
+      app: spinnaker
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: spinnaker
+    spec:
+      containers:
+      - name: spinnaker
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 80
