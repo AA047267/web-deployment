@@ -119,7 +119,7 @@ pipeline {
           }
         }
 
-        stage('BUILD AND PUSH IMAGE - PRE-PROD') {
+        stage('DEPLOY - PRE-PROD') {
           when {
             expression {
                 return env.CUR_BRANCH_NAME.startsWith('release');
@@ -132,7 +132,7 @@ pipeline {
           }
         }
 
-        stage('BUILD AND PUSH IMAGE - PROD') {
+        stage('DEPLOY - PROD') {
           when {
             expression {
                 return env.CUR_BRANCH_NAME == env.PROD_BRANCH_NAME;
