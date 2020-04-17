@@ -147,8 +147,4 @@ pipeline {
 
       
     }
-    post {
-        always {
-        }
-    }
 }
