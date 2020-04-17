@@ -1,11 +1,11 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: spinnaker-service
+  name: helm-deployment-service
   namespace: nginx-for-spinnaker
 spec:
   selector:
-    app: spinnaker
+    app: helm-deployment
   ports:
   - protocol: TCP
     port: 80
