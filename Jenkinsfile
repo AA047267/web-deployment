@@ -17,28 +17,28 @@ def build_docker_image(String profile){
 
 def deploy_dev(String environment, String namespace){
   sh '''
-    pushd helm-charts
+    cd helm-charts
     helm package app-ui/
     helm upgrade --install --force helm-deployment --tiller-namespace spinnaker app-ui-0.1.0.tgz -f helm-charts/app-ui/values-'''+environment+'''.yaml --namespace '''+namespace+'''
-    popd
+    cd ..
   '''
 }
 
 def deploy_pre_prod(String environment, String namespace){
   sh '''
-    pushd helm-charts
+    cd helm-charts
     helm package app-ui/
     helm upgrade --install --force helm-deployment --tiller-namespace spinnaker app-ui-0.1.0.tgz -f helm-charts/app-ui/values-'''+environment+'''.yaml --namespace '''+namespace+'''
-    popd
+    cd ..
   '''
 }
 
 def deploy_prod(String environment, String namespace){
   sh '''
-    pushd helm-charts
+    cd helm-charts
     helm package app-ui/
     helm upgrade --install --force helm-deployment --tiller-namespace spinnaker app-ui-0.1.0.tgz -f helm-charts/app-ui/values-'''+environment+'''.yaml --namespace '''+namespace+'''
-    popd
+    cd ..
   '''
 }
 
