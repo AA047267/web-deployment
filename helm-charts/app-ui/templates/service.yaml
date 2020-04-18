@@ -2,7 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: helm-deployment-service
-  namespace: nginx-for-spinnaker
+  namespace: {{ .Values.namespace }}
 spec:
   selector:
     app: helm-deployment
