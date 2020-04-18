@@ -1,0 +1,8 @@
+replicaCount: 1
+
+image:
+  repository: aa047267/spinnaker
+  tag: web-deployment-1.10.0-staging
+  pullPolicy: Always
+
+namespace: testing-spinnaker-dev
