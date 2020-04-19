@@ -50,7 +50,7 @@ def build_docker_image_prod(String profile){
 pipeline {
     agent any
     environment {
-        VERSION = "2.10.0"
+        VERSION = "3.10.0"
         ENV = "staging"
         DEV_BRANCH_NAME = "development"
         CUR_BRANCH_NAME = BranchName()
