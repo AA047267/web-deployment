@@ -1,7 +1,7 @@
 replicaCount: 3
 
 image:
-  repository: aa047267/spinnaker
+  repository: 230367374156.dkr.ecr.us-east-1.amazonaws.com/devops
   tag: web-deployment-1.10.0-staging
   pullPolicy: Always
 
