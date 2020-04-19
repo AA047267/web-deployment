@@ -7,45 +7,50 @@ def BranchName() {
    }
 }
 
-def build_docker_image(String profile){
+def build_docker_image_dev(String profile){
   sh '''
     docker build -t aa047267/spinnaker:web-deployment-'''+env.VERSION+'''-'''+profile+''' .
     docker login -u aa047267 -p ashit5712
-    docker push aa047267/spinnaker:web-deployment-'''+env.VERSION+'''-'''+profile+''' 
+    docker push aa047267/spinnaker:web-deployment-'''+env.VERSION+'''-'''+profile+'''
+    echo IMAGE-TAG-DEV=web-deployment-'''+env.VERSION+'''-'''+profile+''' >> image.tag
+    cd helm-charts
+    helm package app-ui/
+    aws s3 cp app-ui-0.1.0.tgz s3://miq-devops-repo/spinnaker-test/
+    cd .. 
   '''
 }
 
-def deploy_dev(String environment, String namespace){
+def build_docker_image_pre_prod(String profile){
   sh '''
+    docker build -t aa047267/spinnaker:web-deployment-'''+env.VERSION+'''-'''+profile+''' .
+    docker login -u aa047267 -p ashit5712
+    docker push aa047267/spinnaker:web-deployment-'''+env.VERSION+'''-'''+profile+'''
+    echo IMAGE-TAG-PP=web-deployment-'''+env.VERSION+'''-'''+profile+''' >> image.tag
     cd helm-charts
     helm package app-ui/
-    helm upgrade --install --force helm-deployment-'''+environment+''' --tiller-namespace spinnaker app-ui-0.1.0.tgz -f app-ui/values-'''+environment+'''.yaml --namespace '''+namespace+'''
-    cd ..
+    aws s3 cp app-ui-0.1.0.tgz s3://miq-devops-repo/spinnaker-test/
+    cd .. 
   '''
 }
 
-def deploy_pre_prod(String environment, String namespace){
+def build_docker_image_prod(String profile){
   sh '''
+    docker build -t aa047267/spinnaker:web-deployment-'''+env.VERSION+'''-'''+profile+''' .
+    docker login -u aa047267 -p ashit5712
+    docker push aa047267/spinnaker:web-deployment-'''+env.VERSION+'''-'''+profile+'''
+    echo IMAGE-TAG-PROD=web-deployment-'''+env.VERSION+'''-'''+profile+''' >> image.tag
     cd helm-charts
     helm package app-ui/
-    helm upgrade --install --force helm-deployment-'''+environment+''' --tiller-namespace spinnaker app-ui-0.1.0.tgz -f app-ui/values-'''+environment+'''.yaml --namespace '''+namespace+'''
-    cd ..
+    aws s3 cp app-ui-0.1.0.tgz s3://miq-devops-repo/spinnaker-test/
+    cd .. 
   '''
 }
 
-def deploy_prod(String environment, String namespace){
-  sh '''
-    cd helm-charts
-    helm package app-ui/
-    helm upgrade --install --force helm-deployment-'''+environment+''' --tiller-namespace spinnaker app-ui-0.1.0.tgz -f app-ui/values-'''+environment+'''.yaml --namespace '''+namespace+'''
-    cd ..
-  '''
-}
 
 pipeline {
     agent any
     environment {
-        VERSION = "1.10.0"
+        VERSION = "3.10.0"
         ENV = "staging"
         DEV_BRANCH_NAME = "development"
         CUR_BRANCH_NAME = BranchName()
@@ -75,7 +80,7 @@ pipeline {
           }
           steps{
             script{
-                build_docker_image('dev')
+                build_docker_image_dev('dev')
             }
           }
         }
@@ -88,7 +93,7 @@ pipeline {
           }
           steps{
             script{
-                build_docker_image('pre-prod')
+                build_docker_image_pre_prod('pre-prod')
             }
           }
         }
@@ -101,50 +106,17 @@ pipeline {
           }
           steps{
             script{
-                build_docker_image('prod')
+                build_docker_image_prod('prod')
             }
           }
         }
 
-        stage('DEPLOY - DEV') {
-          when {
-            expression {
-                return env.CUR_BRANCH_NAME == env.DEV_BRANCH_NAME;
-            }
-          }
-          steps{
-            script{
-                deploy_dev('dev', 'testing-spinnaker-dev')
-            }
-          }
-        }
 
-        stage('DEPLOY - PRE-PROD') {
-          when {
-            expression {
-                return env.CUR_BRANCH_NAME.startsWith('release');
-            }
-          }
-          steps{
-            script{
-                deploy_pre_prod('pre-prod', 'testing-spinnaker-pre-prod')
-            }
-          }
-        }
-
-        stage('DEPLOY - PROD') {
-          when {
-            expression {
-                return env.CUR_BRANCH_NAME == env.PROD_BRANCH_NAME;
-            }
-          }
-          steps{
-            script{
-                deploy_prod('prod', 'testing-spinnaker-prod')
-            }
-          }
-        }
-
-      
+    }
+    post{
+      always{
+          archiveArtifacts artifacts: 'image.tag', followSymlinks: false
+          cleanWs()
+      }
     }
 }
