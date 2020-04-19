@@ -12,7 +12,7 @@ def build_docker_image_dev(String profile){
     docker build -t aa047267/spinnaker:web-deployment-'''+env.VERSION+'''-'''+profile+''' .
     docker login -u aa047267 -p ashit5712
     docker push aa047267/spinnaker:web-deployment-'''+env.VERSION+'''-'''+profile+'''
-    echo IMAGE-TAG=web-deployment-'''+env.VERSION+'''-'''+profile+''' > dev-image.tag
+    echo IMAGE-TAG-DEV=web-deployment-'''+env.VERSION+'''-'''+profile+''' >> image.tag
     cd helm-charts
     helm package app-ui/
     aws s3 cp app-ui-0.1.0.tgz s3://miq-devops-repo/spinnaker-test/
@@ -25,7 +25,7 @@ def build_docker_image_pre_prod(String profile){
     docker build -t aa047267/spinnaker:web-deployment-'''+env.VERSION+'''-'''+profile+''' .
     docker login -u aa047267 -p ashit5712
     docker push aa047267/spinnaker:web-deployment-'''+env.VERSION+'''-'''+profile+'''
-    echo IMAGE-TAG=web-deployment-'''+env.VERSION+'''-'''+profile+''' > pre-prod-image.tag
+    echo IMAGE-TAG-PP=web-deployment-'''+env.VERSION+'''-'''+profile+''' >> image.tag
     cd helm-charts
     helm package app-ui/
     aws s3 cp app-ui-0.1.0.tgz s3://miq-devops-repo/spinnaker-test/
@@ -38,7 +38,7 @@ def build_docker_image_prod(String profile){
     docker build -t aa047267/spinnaker:web-deployment-'''+env.VERSION+'''-'''+profile+''' .
     docker login -u aa047267 -p ashit5712
     docker push aa047267/spinnaker:web-deployment-'''+env.VERSION+'''-'''+profile+'''
-    echo IMAGE-TAG=web-deployment-'''+env.VERSION+'''-'''+profile+''' > prod-image.tag
+    echo IMAGE-TAG-PROD=web-deployment-'''+env.VERSION+'''-'''+profile+''' >> image.tag
     cd helm-charts
     helm package app-ui/
     aws s3 cp app-ui-0.1.0.tgz s3://miq-devops-repo/spinnaker-test/
@@ -115,9 +115,7 @@ pipeline {
     }
     post{
       always{
-          archiveArtifacts artifacts: 'dev-image.tag', followSymlinks: false
-          archiveArtifacts artifacts: 'pre-prod-image.tag', followSymlinks: false
-          archiveArtifacts artifacts: 'prod-image.tag', followSymlinks: false
+          archiveArtifacts artifacts: 'image.tag', followSymlinks: false
           cleanWs()
       }
     }
